@@ -12,19 +12,23 @@ export interface CertificateData {
 async function getBrowser() {
   if (process.env.NODE_ENV === "production") {
     // Production: Use @sparticuz/chromium for Vercel
-    const chromium = require("@sparticuz/chromium");
-    const puppeteer = require("puppeteer-core");
+    const [chromiumModule, puppeteerModule] = await Promise.all([
+      import("@sparticuz/chromium"),
+      import("puppeteer-core"),
+    ]);
+
+    const chromium = chromiumModule.default;
+    const puppeteer = puppeteerModule.default;
 
     return puppeteer.launch({
       args: [...chromium.args, "--no-sandbox", "--disable-setuid-sandbox"],
-      defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
-      ignoreHTTPSErrors: true,
+      headless: true,
     });
   } else {
     // Local development: Use regular puppeteer
-    const puppeteer = require("puppeteer");
+    const puppeteerModule = await import("puppeteer");
+    const puppeteer = puppeteerModule.default;
 
     return puppeteer.launch({
       headless: true,
@@ -39,6 +43,7 @@ async function getBrowser() {
     });
   }
 }
+
 
 // Function to get current date in DD-MM-YYYY format
 function getCurrentDateFormatted(): string {
