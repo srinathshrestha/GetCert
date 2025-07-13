@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test-pdf": "node scripts/test-pdf.mjs",
-    "clean-test-pdfs": "rm -rf test-pdfs"
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
