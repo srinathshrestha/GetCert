@@ -1,4 +1,3 @@
-import puppeteer from "puppeteer";
 import fs from "fs";
 import path from "path";
 
@@ -7,6 +6,38 @@ export interface CertificateData {
   studentName: string;
   collegeName: string;
   email: string;
+}
+
+// Dynamic imports for serverless compatibility
+async function getBrowser() {
+  if (process.env.NODE_ENV === "production") {
+    // Production: Use @sparticuz/chromium for Vercel
+    const chromium = require("@sparticuz/chromium");
+    const puppeteer = require("puppeteer-core");
+
+    return puppeteer.launch({
+      args: [...chromium.args, "--no-sandbox", "--disable-setuid-sandbox"],
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
+      ignoreHTTPSErrors: true,
+    });
+  } else {
+    // Local development: Use regular puppeteer
+    const puppeteer = require("puppeteer");
+
+    return puppeteer.launch({
+      headless: true,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-web-security",
+        "--disable-dev-shm-usage",
+        "--disable-gpu",
+        "--disable-features=VizDisplayCompositor",
+      ],
+    });
+  }
 }
 
 // Function to get current date in DD-MM-YYYY format
@@ -306,18 +337,8 @@ export async function generateCertificatePDF(
     console.log("✅ Certificate data validation passed");
     console.log("🎨 Starting PDF generation with Puppeteer:", data);
 
-    // Launch Puppeteer browser
-    browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-        "--disable-web-security",
-        "--disable-features=VizDisplayCompositor",
-      ],
-    });
+    // Launch Puppeteer browser (now serverless-compatible)
+    browser = await getBrowser();
 
     const page = await browser.newPage();
 

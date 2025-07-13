@@ -151,7 +151,6 @@ export const VerifiedEmailList: string[] = [
   "vatsalchauhan9804@gmail.com",
   "ahirmarmik@gmail.com",
   "hamzasheriwala786@gmail.com",
-  "srinathshrestha9890@gmail.com",
   "patelparth8022@gmail.com",
   "akash7567245371@gmail.com",
   "setumadhavani@gmail.com",
