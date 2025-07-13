@@ -1,286 +1,384 @@
-import PDFDocument from "pdfkit";
-import { format } from "date-fns";
+import puppeteer from "puppeteer";
+import fs from "fs";
+import path from "path";
 
-interface CertificateData {
+// Certificate data interface
+export interface CertificateData {
   studentName: string;
-  college: string;
-  field: string;
-  startDate: Date;
-  endDate: Date;
+  collegeName: string;
+  email: string;
 }
 
-/**
- * Generate a professional internship certificate PDF
- * @param data - Certificate data including student details
- * @returns Promise<Buffer> - PDF buffer
- */
+// Function to get current date in DD-MM-YYYY format
+function getCurrentDateFormatted(): string {
+  const now = new Date();
+  const day = now.getDate().toString().padStart(2, "0");
+  const month = (now.getMonth() + 1).toString().padStart(2, "0");
+  const year = now.getFullYear();
+  return `${day}-${month}-${year}`;
+}
+
+// Function to convert image to base64 for embedding
+function getImageAsBase64(imagePath: string): string | null {
+  try {
+    if (fs.existsSync(imagePath)) {
+      const imageBuffer = fs.readFileSync(imagePath);
+      const ext = path.extname(imagePath).toLowerCase();
+      const mimeType = ext === ".png" ? "image/png" : "image/jpeg";
+      return `data:${mimeType};base64,${imageBuffer.toString("base64")}`;
+    }
+  } catch (error) {
+    console.warn(`⚠️  Could not load image: ${imagePath}`, error);
+  }
+  return null;
+}
+
+// Function to generate HTML template for the certificate
+function generateCertificateHTML(data: CertificateData): string {
+  const currentDate = getCurrentDateFormatted();
+  const logoPath = path.join(process.cwd(), "assets", "logo.png");
+  const signaturePath = path.join(process.cwd(), "assets", "signature.png");
+
+  const logoBase64 = getImageAsBase64(logoPath);
+  const signatureBase64 = getImageAsBase64(signaturePath);
+
+  // Extract first name for personalization
+  const firstName = data.studentName.split(" ")[0];
+
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Certificate of Internship Completion</title>
+      <style>
+        @page {
+          size: A4;
+          margin: 30px;
+        }
+        
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        
+        body {
+          font-family: 'Times New Roman', Times, serif;
+          line-height: 1.5;
+          color: #000;
+          background: white;
+          font-size: 18px;
+        }
+        
+        .certificate-container {
+          width: 100%;
+          min-height: 100vh;
+          position: relative;
+          padding: 30px;
+        }
+        
+        .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+          position: relative;
+        }
+        
+        .logo-section {
+          flex: 1;
+        }
+        
+        .logo {
+          width: 200px; /* Increased from 180px */
+          height: auto;
+        }
+        
+        .company-logo-fallback {
+          font-size: 52px;
+          color: #6B46C1;
+          font-weight: 300;
+          letter-spacing: -1px;
+        }
+        
+        .company-info {
+          text-align: right;
+          flex: 1;
+        }
+        
+        .company-name {
+          font-weight: bold;
+          font-size: 18px;
+          margin-bottom: 4px;
+          color: #000;
+        }
+        
+        .company-address {
+          font-size: 16px;
+          line-height: 1.3;
+          color: #000;
+        }
+        
+        .date-info {
+          text-align: right;
+          font-size: 16px;
+          color: #000;
+          margin: 10px 0;
+        }
+        
+        .divider {
+          width: 100%;
+          height: 1px;
+          background-color: #6B46C1;
+          margin: 25px 0 40px 0;
+        }
+        
+        .main-content {
+          margin-bottom: 60px;
+        }
+        
+        .content-paragraph {
+          text-align: justify;
+          font-size: 18px;
+          line-height: 1.6;
+          margin-bottom: 16px;
+          color: #000;
+        }
+        
+        .student-name {
+          font-weight: bold;
+        }
+        
+        .college-name {
+          font-weight: normal;
+        }
+        
+        .highlight {
+          font-weight: bold;
+        }
+        
+        .signature-section {
+          margin-top: 80px;
+          margin-bottom: 80px;
+        }
+        
+        .signature-image {
+          width: 150px; /* Increased from 120px */
+          height: auto;
+          margin-bottom: 5px; /* Reduced from 0px to bring closer to text */
+        }
+        
+        .signature-text {
+          font-size: 18px;
+          line-height: 1.4;
+          color: #000;
+        }
+        
+        .signature-name {
+          font-weight: bold;
+          margin-bottom: 0px;
+        }
+        
+        .signature-title {
+          margin-bottom: 0px;
+        }
+        
+        .signature-org {
+          margin-bottom: 0px;
+        }
+        
+        .footer {
+          position: absolute;
+          bottom: 30px;
+          left: 30px;
+          right: 30px;
+        }
+        
+        .footer-divider {
+          width: 100%;
+          height: 1px;
+          background-color: #000;
+          margin-bottom: 8px;
+        }
+        
+        .footer-details {
+          display: flex;
+          justify-content: space-between;
+          font-size: 16px;
+          font-weight: bold;
+          color: #000;
+        }
+        
+        .footer-item {
+          flex: 1;
+          text-align: center;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="certificate-container">
+        <!-- Header -->
+        <div class="header">
+          <div class="logo-section">
+            ${
+              logoBase64
+                ? `<img src="${logoBase64}" alt="LinkVerse Logo" class="logo" />`
+                : `<div class="company-logo-fallback">LinkVerse</div>`
+            }
+          </div>
+          <div class="company-info">
+            <div class="company-name">LinkVerse labs private LTD</div>
+            <div class="company-address">
+              E-703, Ganesh Glory 11,<br>
+              SG Highway,Ahmedabad<br>
+              CIN: U62099GJ2025PTC158752
+            </div>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="divider"></div>
+
+        <!-- Date -->
+        <div class="date-info">
+          Date: ${currentDate}
+        </div>
+        
+      
+        
+        <!-- Main Content -->
+        <div class="main-content">
+          <div class="content-paragraph">
+            This is to certify that <span class="student-name">${
+              data.studentName
+            }</span>, a student of <span class="college-name">${
+    data.collegeName
+  }</span>, has successfully completed their internship in the field of <span class="highlight">Frontend Web Development using AI tools</span> from <span class="highlight">2 July 2025 to 17 July 2025</span> under the guidance of the team at <span class="highlight">LinkVerse Labs</span>.
+          </div>
+          
+          <div class="content-paragraph">
+            During the internship, <span class="highlight">${firstName}</span> specialized in building modern and responsive website frontends. They made extensive use of AI-powered development tools to accelerate UI creation, improve code efficiency, and enhance user experience. The projects included full deployment cycles using platforms like Vercel, ensuring smooth CI/CD workflows and real-time previews. <span class="highlight">${firstName}</span> also gained exposure to version control, team collaboration, and modern web technologies.
+          </div>
+          
+          <div class="content-paragraph">
+            Throughout the internship, they demonstrated strong problem-solving skills, creativity, and a proactive attitude. They were found to be diligent, hardworking, and inquisitive.
+          </div>
+        </div>
+        
+        <!-- Signature -->
+        <div class="signature-section">
+          ${
+            signatureBase64
+              ? `<img src="${signatureBase64}" alt="Signature" class="signature-image" />`
+              : ""
+          }
+          <div class="signature-text">
+            <div class="signature-name">Harshdeepsinh</div>
+            <div class="signature-title">Internship Coordinator</div>
+            <div class="signature-org">LinkVerse Labs, Ahmedabad</div>
+          </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+          <div class="footer-divider"></div>
+          <div class="footer-details">
+            <div class="footer-item">www.linkverselabs.com</div>
+            <div class="footer-item">info@linkverselabs.com</div>
+            <div class="footer-item">+91 8866230705</div>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+// Function to generate a professional internship certificate PDF using Puppeteer
 export async function generateCertificatePDF(
   data: CertificateData
 ): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    try {
-      // Create a new PDF document
-      const doc = new PDFDocument({
-        size: "A4",
-        layout: "landscape",
-        margins: {
-          top: 50,
-          bottom: 50,
-          left: 50,
-          right: 50,
-        },
-      });
+  let browser;
 
-      // Buffer to store PDF data
-      const buffers: Buffer[] = [];
-      doc.on("data", (buffer) => buffers.push(buffer));
-      doc.on("end", () => {
-        const pdfBuffer = Buffer.concat(buffers);
-        resolve(pdfBuffer);
-      });
-      doc.on("error", reject);
+  try {
+    console.log("✅ Certificate data validation passed");
+    console.log("🎨 Starting PDF generation with Puppeteer:", data);
 
-      // Document dimensions (A4 landscape)
-      const pageWidth = 842;
-      const pageHeight = 595;
-      const centerX = pageWidth / 2;
+    // Launch Puppeteer browser
+    browser = await puppeteer.launch({
+      headless: true,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-gpu",
+        "--disable-web-security",
+        "--disable-features=VizDisplayCompositor",
+      ],
+    });
 
-      // Colors (using our theme)
-      const primaryColor = "#9333ea"; // Primary color from theme
-      const accentColor = "#6366f1"; // Accent color
-      const textColor = "#1f2937"; // Foreground text
+    const page = await browser.newPage();
 
-      // Add decorative border
-      doc
-        .rect(20, 20, pageWidth - 40, pageHeight - 40)
-        .strokeColor(primaryColor)
-        .lineWidth(3)
-        .stroke();
+    // Set viewport for consistent rendering
+    await page.setViewport({ width: 1200, height: 1600 });
 
-      // Add inner border
-      doc
-        .rect(35, 35, pageWidth - 70, pageHeight - 70)
-        .strokeColor(primaryColor)
-        .lineWidth(1)
-        .stroke();
+    // Generate HTML content
+    const htmlContent = generateCertificateHTML(data);
 
-      // Header: Certificate Title
-      doc
-        .fontSize(48)
-        .fillColor(primaryColor)
-        .font("Helvetica-Bold")
-        .text("CERTIFICATE OF COMPLETION", centerX, 80, {
-          align: "center",
-          width: pageWidth - 100,
-        });
+    // Set page content
+    await page.setContent(htmlContent, {
+      waitUntil: "networkidle0",
+      timeout: 30000,
+    });
 
-      // Subtitle
-      doc
-        .fontSize(24)
-        .fillColor(accentColor)
-        .font("Helvetica")
-        .text("Internship Program", centerX, 140, {
-          align: "center",
-          width: pageWidth - 100,
-        });
+    // Generate PDF with optimized settings
+    const pdfUint8Array = await page.pdf({
+      format: "A4",
+      printBackground: true,
+      preferCSSPageSize: true,
+      margin: {
+        top: "0.4in",
+        right: "0.4in",
+        bottom: "0.4in",
+        left: "0.4in",
+      },
+    });
 
-      // Decorative line
-      doc
-        .moveTo(centerX - 150, 180)
-        .lineTo(centerX + 150, 180)
-        .strokeColor(primaryColor)
-        .lineWidth(2)
-        .stroke();
+    // Convert Uint8Array to Buffer
+    const pdfBuffer = Buffer.from(pdfUint8Array);
 
-      // Main certificate text
-      const currentY = 220;
-      doc
-        .fontSize(18)
-        .fillColor(textColor)
-        .font("Helvetica")
-        .text("This is to certify that", centerX, currentY, {
-          align: "center",
-          width: pageWidth - 100,
-        });
+    console.log(`✅ PDF generation completed (${pdfBuffer.length} bytes)`);
 
-      // Student name (highlighted)
-      doc
-        .fontSize(36)
-        .fillColor(primaryColor)
-        .font("Helvetica-Bold")
-        .text(data.studentName, centerX, currentY + 40, {
-          align: "center",
-          width: pageWidth - 100,
-        });
-
-      // Institution info
-      doc
-        .fontSize(18)
-        .fillColor(textColor)
-        .font("Helvetica")
-        .text(`from ${data.college}`, centerX, currentY + 90, {
-          align: "center",
-          width: pageWidth - 100,
-        });
-
-      // Completion text
-      doc
-        .fontSize(18)
-        .fillColor(textColor)
-        .text(
-          "has successfully completed the internship program in",
-          centerX,
-          currentY + 125,
-          {
-            align: "center",
-            width: pageWidth - 100,
-          }
-        );
-
-      // Field of internship
-      doc
-        .fontSize(24)
-        .fillColor(accentColor)
-        .font("Helvetica-Bold")
-        .text(data.field, centerX, currentY + 160, {
-          align: "center",
-          width: pageWidth - 100,
-        });
-
-      // Duration information
-      const startDateFormatted = format(data.startDate, "MMMM dd, yyyy");
-      const endDateFormatted = format(data.endDate, "MMMM dd, yyyy");
-
-      doc
-        .fontSize(16)
-        .fillColor(textColor)
-        .font("Helvetica")
-        .text(
-          `Duration: ${startDateFormatted} to ${endDateFormatted}`,
-          centerX,
-          currentY + 200,
-          {
-            align: "center",
-            width: pageWidth - 100,
-          }
-        );
-
-      // Certificate date and ID
-      const certificateDate = format(new Date(), "MMMM dd, yyyy");
-      const certificateId = `CERT-${Date.now()}-${Math.random()
-        .toString(36)
-        .substr(2, 9)
-        .toUpperCase()}`;
-
-      // Date issued (bottom left)
-      doc
-        .fontSize(12)
-        .fillColor(textColor)
-        .font("Helvetica")
-        .text(`Date Issued: ${certificateDate}`, 80, pageHeight - 120);
-
-      // Certificate ID (bottom right)
-      doc
-        .fontSize(12)
-        .fillColor(textColor)
-        .text(
-          `Certificate ID: ${certificateId}`,
-          pageWidth - 280,
-          pageHeight - 120
-        );
-
-      // Signature line and authority
-      const signatureY = pageHeight - 160;
-
-      // Signature line
-      doc
-        .moveTo(centerX - 100, signatureY)
-        .lineTo(centerX + 100, signatureY)
-        .strokeColor(textColor)
-        .lineWidth(1)
-        .stroke();
-
-      // Authority signature
-      doc
-        .fontSize(14)
-        .fillColor(textColor)
-        .font("Helvetica-Bold")
-        .text("Authorized Signature", centerX, signatureY + 10, {
-          align: "center",
-          width: 200,
-        });
-
-      doc
-        .fontSize(12)
-        .fillColor(textColor)
-        .font("Helvetica")
-        .text("Program Director", centerX, signatureY + 30, {
-          align: "center",
-          width: 200,
-        });
-
-      console.log("✅ PDF certificate generated successfully");
-
-      // Finalize the PDF
-      doc.end();
-    } catch (error) {
-      console.error("❌ Error generating PDF certificate:", error);
-      reject(error);
+    return pdfBuffer;
+  } catch (error) {
+    console.error("❌ Error generating PDF certificate:", error);
+    throw error;
+  } finally {
+    // Always close the browser
+    if (browser) {
+      await browser.close();
     }
-  });
+  }
 }
 
-/**
- * Validate certificate data before generation
- * @param data - Certificate data to validate
- * @throws Error if validation fails
- */
-export function validateCertificateData(
-  data: Partial<CertificateData>
-): asserts data is CertificateData {
-  if (
-    !data.studentName ||
-    typeof data.studentName !== "string" ||
-    data.studentName.trim().length === 0
-  ) {
-    throw new Error("Student name is required and must be a non-empty string");
+// Validation function for certificate data
+export function validateCertificateData(data: CertificateData): void {
+  if (!data.studentName || !data.studentName.trim()) {
+    throw new Error("Student name is required");
   }
 
-  if (
-    !data.college ||
-    typeof data.college !== "string" ||
-    data.college.trim().length === 0
-  ) {
-    throw new Error("College name is required and must be a non-empty string");
+  if (!data.collegeName || !data.collegeName.trim()) {
+    throw new Error("College name is required");
   }
 
-  if (
-    !data.field ||
-    typeof data.field !== "string" ||
-    data.field.trim().length === 0
-  ) {
-    throw new Error("Field is required and must be a non-empty string");
+  if (!data.email || !data.email.trim()) {
+    throw new Error("Email is required");
   }
 
-  if (
-    !data.startDate ||
-    !(data.startDate instanceof Date) ||
-    isNaN(data.startDate.getTime())
-  ) {
-    throw new Error("Start date is required and must be a valid Date object");
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(data.email)) {
+    throw new Error("Invalid email format");
   }
-
-  if (
-    !data.endDate ||
-    !(data.endDate instanceof Date) ||
-    isNaN(data.endDate.getTime())
-  ) {
-    throw new Error("End date is required and must be a valid Date object");
-  }
-
-  if (data.startDate >= data.endDate) {
-    throw new Error("Start date must be before end date");
-  }
-
-  console.log("✅ Certificate data validation passed");
 }

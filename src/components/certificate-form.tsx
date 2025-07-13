@@ -13,7 +13,9 @@ import {
   Download,
   CheckCircle,
   AlertCircle,
+  Eye,
 } from "lucide-react";
+import { PDFPreviewModal } from "@/components/pdf-preview-modal";
 
 interface CertificateFormProps {
   onBack: () => void;
@@ -56,6 +58,7 @@ export function CertificateForm({ onBack }: CertificateFormProps) {
   });
 
   const [formErrors, setFormErrors] = useState<FormErrors>({});
+  const [showPreview, setShowPreview] = useState(false);
 
   // Validate email format
   const isValidEmail = (email: string) => {
@@ -409,21 +412,31 @@ export function CertificateForm({ onBack }: CertificateFormProps) {
                     className="text-muted-foreground mb-8"
                   >
                     Your internship certificate has been generated successfully.
-                    Click the button below to download it.
+                    You can preview it first or download it directly.
                   </motion.p>
 
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 }}
+                    className="flex flex-col sm:flex-row gap-4 justify-center"
                   >
+                    <Button
+                      onClick={() => setShowPreview(true)}
+                      variant="outline"
+                      className="px-6 py-3 text-lg font-semibold hover:scale-105 transition-transform"
+                    >
+                      <Eye className="w-5 h-5 mr-2" />
+                      Preview Certificate
+                    </Button>
+
                     <Button
                       onClick={() => {
                         if (processing.downloadUrl) {
                           window.open(processing.downloadUrl, "_blank");
                         }
                       }}
-                      className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg font-semibold hover:scale-105 transition-transform"
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 text-lg font-semibold hover:scale-105 transition-transform"
                     >
                       <Download className="w-5 h-5 mr-2" />
                       Download Certificate
@@ -443,6 +456,19 @@ export function CertificateForm({ onBack }: CertificateFormProps) {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* PDF Preview Modal */}
+        <PDFPreviewModal
+          isOpen={showPreview}
+          onClose={() => setShowPreview(false)}
+          downloadUrl={processing.downloadUrl}
+          studentName={formData.name}
+          onDownload={() => {
+            if (processing.downloadUrl) {
+              window.open(processing.downloadUrl, "_blank");
+            }
+          }}
+        />
       </div>
     </div>
   );

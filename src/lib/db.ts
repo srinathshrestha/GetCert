@@ -75,3 +75,31 @@ export async function updateInternCertificateKey(
     throw error;
   }
 }
+
+// Helper function to create a new intern record
+export async function createInternRecord(
+  name: string,
+  college: string, 
+  email: string,
+  field: string = "Web Development", // Default field
+  startDate: Date = new Date("2024-01-01"), // Default start date
+  endDate: Date = new Date("2024-12-31") // Default end date
+) {
+  try {
+    const newIntern = await prisma.intern.create({
+      data: {
+        name: name.trim(),
+        college: college.trim(),
+        email: email.toLowerCase().trim(),
+        field,
+        startDate,
+        endDate,
+      },
+    });
+    console.log(`✅ Intern record created successfully: ${newIntern.name}`);
+    return newIntern;
+  } catch (error) {
+    console.error("Error creating intern record:", error);
+    throw error;
+  }
+}

@@ -86,7 +86,7 @@ export function FAQSection() {
         </p>
       </motion.div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {faqData.map((item, index) => (
           <motion.div
             key={index}
@@ -94,13 +94,13 @@ export function FAQSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
           >
-            <Card className="border-border bg-secondary/30 backdrop-blur-sm hover:bg-secondary/50 transition-all duration-300">
+            <Card className="border-border bg-secondary/20 backdrop-blur-sm hover:shadow-md transition-all duration-300">
               <CardContent className="p-0">
                 <button
                   onClick={() => toggleItem(index)}
-                  className="w-full p-6 text-left flex items-center justify-between hover:bg-secondary/20 transition-colors duration-200 rounded-lg"
+                  className="w-full py-4 px-6 text-left flex items-center justify-between hover:bg-secondary/10 transition-colors duration-200 rounded-lg"
                 >
-                  <span className="font-semibold text-foreground pr-4">
+                  <span className="font-medium text-foreground pr-3">
                     {item.question}
                   </span>
                   <motion.div
@@ -122,15 +122,13 @@ export function FAQSection() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                      transition={{ duration: 0.25, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="px-6 pb-6 pt-0">
-                        <div className="border-t border-border pt-4">
-                          <p className="text-muted-foreground leading-relaxed">
-                            {item.answer}
-                          </p>
-                        </div>
+                      <div className="px-6 pb-4">
+                        <p className="text-foreground/80 leading-normal">
+                          {item.answer}
+                        </p>
                       </div>
                     </motion.div>
                   )}

@@ -12,6 +12,9 @@ A premium, responsive web application built with Next.js that allows students to
 - **Terms Acceptance**: Required terms and conditions acceptance before generation
 - **Edge Case Handling**: Comprehensive error handling and user feedback
 - **FAQ Section**: Built-in help section with common questions and answers
+- **Admin Dashboard**: Password-protected admin panel with certificate statistics
+- **PDF Preview**: Preview certificates before downloading with inline viewer
+- **Certificate Tracking**: Monitor completion rates and student activity
 
 ## 🛠️ Tech Stack
 
@@ -112,6 +115,12 @@ npm start
 
 Visit `http://localhost:3000` to see the application.
 
+### 6. Admin Access
+
+Access the admin dashboard at `http://localhost:3000/admin` using:
+- Username: `admin` (configurable in .env)
+- Password: `admin123` (configurable in .env)
+
 ## 📋 Database Schema
 
 The application expects an `interns` table with the following structure:
@@ -150,13 +159,18 @@ The application uses a custom theme defined in `src/app/globals.css`. The theme 
 
 - **LandingPage**: Hero section with features and CTA
 - **CertificateForm**: Form with validation and processing states
-- **FAQSection**: Collapsible help section
+- **FAQSection**: Collapsible help section with improved spacing
 - **Processing States**: Loading, success, and error feedback
+- **AdminDashboard**: Statistics tracking and certificate monitoring
+- **PDFPreviewModal**: Inline PDF viewer with download option
 
 ### API Routes
 
 - **`/api/verify-student`**: Verify student email against database
 - **`/api/generate-certificate`**: Complete certificate generation workflow
+- **`/api/admin/login`**: Admin authentication endpoint
+- **`/api/admin/logout`**: Admin logout endpoint
+- **`/api/admin/stats`**: Certificate statistics and analytics
 
 ### Key Features
 
