@@ -67,15 +67,45 @@ export async function generateSignedUrl(key: string, expiresIn: number = 3600): 
       ResponseContentDisposition: 'attachment', // Force download instead of inline display
     }
 
-    console.log(`🔄 Generating signed URL for: ${key}`)
+    console.log(`🔄 Generating signed URL for download: ${key}`);
     
     const signedUrl = await s3.getSignedUrlPromise('getObject', params)
     
-    console.log(`✅ Signed URL generated successfully (expires in ${expiresIn}s)`)
+    console.log(
+      `✅ Download URL generated successfully (expires in ${expiresIn}s)`
+    );
     return signedUrl
   } catch (error) {
     console.error('❌ Error generating signed URL:', error)
     throw new Error('Failed to generate download link')
+  }
+}
+
+/**
+ * Generate a pre-signed URL for previewing a certificate (inline display)
+ * @param key - The S3 object key
+ * @param expiresIn - Expiration time in seconds (default: 1 hour)
+ * @returns Promise<string> - The pre-signed preview URL
+ */
+export async function generatePreviewUrl(key: string, expiresIn: number = 3600): Promise<string> {
+  try {
+    const params = {
+      Bucket: BUCKET_NAME,
+      Key: key,
+      Expires: expiresIn, // URL expires in 1 hour by default
+      ResponseContentDisposition: 'inline', // Display inline for preview
+      ResponseContentType: 'application/pdf', // Ensure PDF content type
+    }
+
+    console.log(`🔄 Generating preview URL for: ${key}`)
+    
+    const previewUrl = await s3.getSignedUrlPromise('getObject', params)
+    
+    console.log(`✅ Preview URL generated successfully (expires in ${expiresIn}s)`)
+    return previewUrl
+  } catch (error) {
+    console.error('❌ Error generating preview URL:', error)
+    throw new Error('Failed to generate preview link')
   }
 }
 

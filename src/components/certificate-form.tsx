@@ -40,6 +40,7 @@ interface ProcessingState {
   success: boolean;
   error: string | null;
   downloadUrl: string | null;
+  previewUrl: string | null;
 }
 
 export function CertificateForm({ onBack }: CertificateFormProps) {
@@ -55,6 +56,7 @@ export function CertificateForm({ onBack }: CertificateFormProps) {
     success: false,
     error: null,
     downloadUrl: null,
+    previewUrl: null,
   });
 
   const [formErrors, setFormErrors] = useState<FormErrors>({});
@@ -102,6 +104,7 @@ export function CertificateForm({ onBack }: CertificateFormProps) {
       success: false,
       error: null,
       downloadUrl: null,
+      previewUrl: null,
     });
 
     if (!validateForm()) {
@@ -136,6 +139,7 @@ export function CertificateForm({ onBack }: CertificateFormProps) {
         success: true,
         error: null,
         downloadUrl: data.downloadUrl,
+        previewUrl: data.previewUrl,
       });
     } catch (error) {
       console.error("Certificate generation error:", error);
@@ -147,6 +151,7 @@ export function CertificateForm({ onBack }: CertificateFormProps) {
             ? error.message
             : "An unexpected error occurred",
         downloadUrl: null,
+        previewUrl: null,
       });
     }
   };
@@ -461,7 +466,7 @@ export function CertificateForm({ onBack }: CertificateFormProps) {
         <PDFPreviewModal
           isOpen={showPreview}
           onClose={() => setShowPreview(false)}
-          downloadUrl={processing.downloadUrl}
+          downloadUrl={processing.previewUrl}
           studentName={formData.name}
           onDownload={() => {
             if (processing.downloadUrl) {

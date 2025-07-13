@@ -92,7 +92,7 @@ function generateCertificateHTML(data: CertificateData): string {
         }
         
         .logo {
-          width: 200px; /* Increased from 180px */
+          width: 250px; /* Increased from 200px to make logo bigger */
           height: auto;
         }
         
@@ -167,7 +167,7 @@ function generateCertificateHTML(data: CertificateData): string {
         .signature-image {
           width: 150px; /* Increased from 120px */
           height: auto;
-          margin-bottom: 5px; /* Reduced from 0px to bring closer to text */
+          margin-bottom: -5px; /* Negative margin to bring signature closer to text */
         }
         
         .signature-text {

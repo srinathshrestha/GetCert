@@ -21,9 +21,9 @@ export default function TermsPage() {
                   1. Agreement to Terms
                 </h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  By using our internship certificate generation service, you agree to be bound 
-                  by these Terms and Conditions. If you do not agree to these terms, please do 
-                  not use our service.
+                  By using our internship certificate generation service, you
+                  agree to be bound by these Terms and Conditions. If you do not
+                  agree to these terms, please do not use our service.
                 </p>
               </section>
 
@@ -32,9 +32,10 @@ export default function TermsPage() {
                   2. Service Description
                 </h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  Our service allows eligible students to generate and download their internship 
-                  completion certificates. The service verifies student details against our 
-                  secure database and generates official PDF certificates.
+                  Our service allows eligible students to generate and download
+                  their internship completion certificates. The service verifies
+                  student details against our secure database and generates
+                  official PDF certificates.
                 </p>
               </section>
 
@@ -45,10 +46,15 @@ export default function TermsPage() {
                 <div className="text-muted-foreground leading-relaxed space-y-2">
                   <p>To use this service, you must:</p>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Have completed an internship program with our organization</li>
+                    <li>
+                      Have completed an internship program with our organization
+                    </li>
                     <li>Be registered in our internship database</li>
                     <li>Provide accurate and truthful information</li>
-                    <li>Use the email address associated with your internship registration</li>
+                    <li>
+                      Use the email address associated with your internship
+                      registration
+                    </li>
                   </ul>
                 </div>
               </section>
@@ -60,9 +66,17 @@ export default function TermsPage() {
                 <div className="text-muted-foreground leading-relaxed space-y-2">
                   <p>We are committed to protecting your privacy:</p>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>All data transmission is encrypted using SSL technology</li>
-                    <li>Personal information is used solely for certificate generation</li>
-                    <li>Certificates are stored securely in encrypted cloud storage</li>
+                    <li>
+                      All data transmission is encrypted using SSL technology
+                    </li>
+                    <li>
+                      Personal information is used solely for certificate
+                      generation
+                    </li>
+                    <li>
+                      Certificates are stored securely in encrypted cloud
+                      storage
+                    </li>
                     <li>Download links are time-limited for security</li>
                     <li>We do not share your information with third parties</li>
                   </ul>
@@ -74,9 +88,9 @@ export default function TermsPage() {
                   5. Certificate Authenticity
                 </h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  All generated certificates are official documents. Any attempt to 
-                  falsify information or generate certificates fraudulently is strictly 
-                  prohibited and may result in legal action.
+                  All generated certificates are official documents. Any attempt
+                  to falsify information or generate certificates fraudulently
+                  is strictly prohibited and may result in legal action.
                 </p>
               </section>
 
@@ -85,9 +99,10 @@ export default function TermsPage() {
                   6. Service Availability
                 </h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  While we strive to maintain 24/7 service availability, we do not 
-                  guarantee uninterrupted access. The service may be temporarily 
-                  unavailable due to maintenance, updates, or technical issues.
+                  While we strive to maintain 24/7 service availability, we do
+                  not guarantee uninterrupted access. The service may be
+                  temporarily unavailable due to maintenance, updates, or
+                  technical issues.
                 </p>
               </section>
 
@@ -96,9 +111,10 @@ export default function TermsPage() {
                   7. Limitation of Liability
                 </h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  Our liability is limited to providing the certificate generation service. 
-                  We are not responsible for any indirect, incidental, or consequential 
-                  damages arising from the use of our service.
+                  Our liability is limited to providing the certificate
+                  generation service. We are not responsible for any indirect,
+                  incidental, or consequential damages arising from the use of
+                  our service.
                 </p>
               </section>
 
@@ -110,7 +126,9 @@ export default function TermsPage() {
                   <p>As a user, you agree to:</p>
                   <ul className="list-disc pl-6 space-y-1">
                     <li>Provide accurate and complete information</li>
-                    <li>Not attempt to access certificates for other individuals</li>
+                    <li>
+                      Not attempt to access certificates for other individuals
+                    </li>
                     <li>Not misuse or abuse the service</li>
                     <li>Keep your download links secure and confidential</li>
                     <li>Report any issues or discrepancies promptly</li>
@@ -123,9 +141,9 @@ export default function TermsPage() {
                   9. Intellectual Property
                 </h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  The certificate templates, designs, and service technology are our 
-                  intellectual property. You may not reproduce, modify, or distribute 
-                  these materials without explicit permission.
+                  The certificate templates, designs, and service technology are
+                  our intellectual property. You may not reproduce, modify, or
+                  distribute these materials without explicit permission.
                 </p>
               </section>
 
@@ -134,9 +152,10 @@ export default function TermsPage() {
                   10. Changes to Terms
                 </h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  We reserve the right to update these terms at any time. Changes will 
-                  be effective immediately upon posting. Continued use of the service 
-                  constitutes acceptance of any modifications.
+                  We reserve the right to update these terms at any time.
+                  Changes will be effective immediately upon posting. Continued
+                  use of the service constitutes acceptance of any
+                  modifications.
                 </p>
               </section>
 
@@ -145,13 +164,13 @@ export default function TermsPage() {
                   11. Contact Information
                 </h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  If you have questions about these terms or need support, please contact 
-                  us at{' '}
-                  <a 
-                    href="mailto:support@example.com" 
+                  If you have questions about these terms or need support,
+                  please contact us at{" "}
+                  <a
+                    href="mailto:hr@linkverselabs.com"
                     className="text-primary hover:underline"
                   >
-                    support@example.com
+                    hr@linkverselabs.com
                   </a>
                   .
                 </p>
@@ -159,10 +178,10 @@ export default function TermsPage() {
 
               <section className="bg-primary/5 border border-primary/20 rounded-lg p-6">
                 <p className="text-sm text-muted-foreground">
-                  <strong className="text-foreground">Important:</strong> By clicking 
-                  &quot;I accept the terms and conditions&quot; in our certificate generation 
-                  form, you acknowledge that you have read, understood, and agree to be 
-                  bound by these terms.
+                  <strong className="text-foreground">Important:</strong> By
+                  clicking &quot;I accept the terms and conditions&quot; in our
+                  certificate generation form, you acknowledge that you have
+                  read, understood, and agree to be bound by these terms.
                 </p>
               </section>
             </div>
@@ -170,5 +189,5 @@ export default function TermsPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 } 

@@ -7,11 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { X, Download, Eye, Loader2, AlertCircle } from 'lucide-react'
 
 interface PDFPreviewModalProps {
-  isOpen: boolean
-  onClose: () => void
-  downloadUrl?: string | null
-  studentName?: string
-  onDownload?: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  downloadUrl?: string | null; // URL for preview display
+  studentName?: string;
+  onDownload?: () => void;
 }
 
 export function PDFPreviewModal({ 

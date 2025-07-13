@@ -153,7 +153,7 @@ export function FAQSection() {
           to help.
         </p>
         <a
-          href="mailto:support@example.com"
+          href="mailto:hr@linkverselabs.com"
           className="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors duration-300 font-medium"
         >
           Contact Support

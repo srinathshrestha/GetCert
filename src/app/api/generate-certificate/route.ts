@@ -9,7 +9,12 @@ import {
   generateCertificatePDF,
   validateCertificateData,
 } from "@/lib/pdf-generator";
-import { uploadPdfToS3, generateSignedUrl, certificateExists } from "@/lib/s3";
+import {
+  uploadPdfToS3,
+  generateSignedUrl,
+  generatePreviewUrl,
+  certificateExists,
+} from "@/lib/s3";
 import { VerifiedEmailList } from "@/lib/utils";
 
 // Request validation schema
@@ -104,16 +109,18 @@ export async function POST(request: Request) {
         const exists = await certificateExists(intern.certificateKey);
 
         if (exists) {
-          // Generate new signed URL for existing certificate
+          // Generate new signed URLs for existing certificate
           console.log(
-            `♻️  Certificate already exists, generating new download link`
+            `♻️  Certificate already exists, generating new download and preview links`
           );
           const downloadUrl = await generateSignedUrl(intern.certificateKey);
+          const previewUrl = await generatePreviewUrl(intern.certificateKey);
 
           return NextResponse.json({
             success: true,
             message: "Certificate already exists. Download link generated.",
             downloadUrl,
+            previewUrl,
             isExisting: true,
           });
         } else {
@@ -156,11 +163,12 @@ export async function POST(request: Request) {
 
     console.log(`✅ Database updated with certificate key`);
 
-    // Step 7: Generate signed download URL
-    console.log(`🔗 Generating signed download URL...`);
+    // Step 7: Generate signed URLs for download and preview
+    console.log(`🔗 Generating signed URLs for download and preview...`);
     const downloadUrl = await generateSignedUrl(s3Key, 3600); // 1 hour expiration
+    const previewUrl = await generatePreviewUrl(s3Key, 3600); // 1 hour expiration
 
-    console.log(`✅ Download URL generated (expires in 1 hour)`);
+    console.log(`✅ Download and preview URLs generated (expires in 1 hour)`);
 
     // Step 8: Return success response
     console.log(
@@ -171,6 +179,7 @@ export async function POST(request: Request) {
       success: true,
       message: "Certificate generated successfully.",
       downloadUrl,
+      previewUrl,
       certificateId: s3Key,
       studentName: intern.name,
       isExisting: false,
